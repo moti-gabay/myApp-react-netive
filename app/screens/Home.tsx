@@ -1,10 +1,10 @@
-import React from "react";
-import { View, Text, FlatList, Button } from "react-native";
-import { useSelector, useDispatch } from "react-redux";
-import { RootState, AppDispatch } from "../../src/store/store";
-import { toggleTask, deleteTask } from "../../src/store/slices/taskSlice";
-import TaskItem from "@/components/TaskItem";
-import { useRouter } from "expo-router";
+import React from 'react';
+import { View, Text, FlatList, Button } from 'react-native';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState, AppDispatch } from '../../src/store/store';
+import { toggleTask, deleteTask } from '../../src/store/slices/taskSlice';
+import TaskItem from '../../components/TaskItem';
+import { useRouter } from 'expo-router';
 
 export default function Home() {
   const tasks = useSelector((state: RootState) => state.tasks.tasks);
@@ -21,12 +21,11 @@ export default function Home() {
             task={item}
             onToggle={() => dispatch(toggleTask(item.id))}
             onDelete={() => dispatch(deleteTask(item.id))}
-            onEdit={() => router.push({ pathname: "/editTask", params: { id: item.id } })}
+            onEdit={() => router.push(`/editTask?id=${item.id}`)}
           />
         )}
       />
-      <Button title="Add Task" onPress={() => router.push("/editTask" as const)
- } />
+      <Button title="Add Task" onPress={() => router.push('/editTask')} />
     </View>
   );
 }
