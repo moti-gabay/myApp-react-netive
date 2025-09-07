@@ -2,7 +2,7 @@ import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { Button, TextInput, View } from "react-native";
 import { useDispatch } from "react-redux";
-import { addTask } from "../../src/store/slices/taskSlice";
+import { addTaskAsync } from "../../src/store/slices/taskSlice";
 import { AppDispatch } from "../../src/store/store";
 
 export default function AddTask() {
@@ -22,11 +22,7 @@ export default function AddTask() {
   title="Save"
   onPress={() => {
     if (text.trim()) {
-      dispatch(addTask({
-        id: Date.now().toString(),
-        title: text,
-        completed: false,
-      }));
+      dispatch(addTaskAsync(text)); // שולח לשרת וגם שומר ב־Redux
       router.back();
     }
   }}
