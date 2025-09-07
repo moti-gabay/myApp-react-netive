@@ -1,17 +1,17 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
 import { Button, TextInput, View } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
+import { useAppDispatch, useAppSelector } from "../../src/store/hooks";
 import { updateTask } from "../../src/store/slices/taskSlice";
 import { AppDispatch, RootState } from "../../src/store/store";
 
 export default function EditTask() {
     const { id } = useLocalSearchParams<{ id: string }>();
-    const task = useSelector((state: RootState) =>
+    const task = useAppSelector((state: RootState) =>
         state.tasks.tasks.find((t) => t.id === id)
     );
     const [text, setText] = useState(task?.title || "");
-    const dispatch = useDispatch<AppDispatch>();
+    const dispatch = useAppDispatch();
     const router = useRouter();
 
     return (

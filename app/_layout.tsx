@@ -1,10 +1,11 @@
 import { Provider } from "react-redux";
 import { store } from "../src/store/store";
 import { Stack } from "expo-router";
+import React from "react";
 
 export default function RootLayout() {
   return (
-    <Provider store={store}>
+    <Provider store={store} children={undefined}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="editTask" options={{ title: "Edit Task" }} />
