@@ -1,6 +1,7 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { View, Text, TextInput, Button, StyleSheet } from "react-native";
+import React from "react";
 
 export default function TaskScreen() {
   const { id, text } = useLocalSearchParams<{ id: string; text: string }>();

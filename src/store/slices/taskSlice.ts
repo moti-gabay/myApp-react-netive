@@ -35,6 +35,8 @@ export const addTaskAsync = createAsyncThunk(
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ title }),
+      credentials: "include"
+
     });
     return res.json(); // השרת מחזיר את המשימה החדשה עם __id
   }
@@ -66,7 +68,6 @@ const taskSlice = createSlice({
       state.loading = true;
     });
     builder.addCase(fetchTasks.fulfilled, (state, action) => {
-      console.log( "print from redux :", action.payload)
       state.tasks = action.payload;
       state.loading = false;
     });
