@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { API_URL } from "../url";
 
-export const API_URL = "http://localhost:5000";
 
 interface AuthState {
   token: string | null;
@@ -53,10 +53,15 @@ const authSlice = createSlice({
     builder.addCase(loginUser.fulfilled, (state, action) => {
       state.loading = false;
       state.token = action.payload.token || null;
+      console.log(state.token)
       state.error = action.payload.error || null;
+                  console.log(state.error)
+
     });
     builder.addCase(registerUser.fulfilled, (state, action) => {
       state.error = action.payload.error || null;
+            console.log(state.error)
+
     });
   },
 });

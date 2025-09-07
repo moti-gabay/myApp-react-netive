@@ -1,7 +1,8 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { API_URL } from '../url';
 
 // export const API_URL = "http://10.0.2.2:5000"; // אם אתה באמולטור Andro_id
-export const API_URL = "http://localhost:5000"; // אם אתה על מחשב עם iOS Simulator
+// export const API_URL = "http://localhost:5000"; // אם אתה על מחשב עם iOS Simulator
 
 export interface Task {
   _id: string;   // שים לב: Mongo מחזיר __id

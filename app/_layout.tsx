@@ -5,7 +5,7 @@ import React from "react";
 
 export default function RootLayout() {
   return (
-    <Provider store={store} children={undefined}>
+    <Provider store={store} >
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="editTask" options={{ title: "Edit Task" }} />
