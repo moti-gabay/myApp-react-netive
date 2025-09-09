@@ -1,9 +1,17 @@
-import { API_URL } from "@/src/store/url";
+import { RootStackParamList } from "@/app/(tabs)/_layout";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import axios from "axios";
 import React, { useState } from "react";
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { API_URL } from "./url";
+type AuthGateNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  "Register"
+>;
+export default function RegisterScreen() {
+      const navigation = useNavigation<AuthGateNavigationProp>();
 
-export default function RegisterScreen({ navigation }: any) {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -61,7 +69,7 @@ export default function RegisterScreen({ navigation }: any) {
 
             <TouchableOpacity
                 style={styles.linkButton}
-                // onPress={() => navigation.navigate("Login")}
+                onPress={() => navigation.navigate("Login")}
             >
                 <Text style={styles.linkText}>יש לך כבר חשבון? התחבר</Text>
             </TouchableOpacity>

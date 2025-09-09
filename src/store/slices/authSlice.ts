@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { API_URL } from "../url";
 
-
 interface AuthState {
   token: string | null;
   loading: boolean;
@@ -21,7 +20,9 @@ export const registerUser = createAsyncThunk(
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
+      credentials: "include",
     });
+    console.log(res.json())
     return res.json();
   }
 );
@@ -33,20 +34,41 @@ export const loginUser = createAsyncThunk(
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
-      credentials:"include"
+      credentials: "include", // שולח cookie
     });
+        console.log(res.json())
+
     return res.json();
   }
 );
 
+// ✅ יציאה עם בקשה לשרת
+export const logoutUser = createAsyncThunk("auth/logout", async () => {
+  const res = await fetch(`${API_URL}/auth/logout`, {
+    method: "POST",
+    credentials: "include", // חובה כדי לנקות cookie
+  });
+
+  if (!res.ok) {
+    throw new Error("Logout failed");
+  }
+
+  return true;
+});
+
+export const checkAuth = createAsyncThunk("auth/check", async () => {
+  const res = await fetch(`${API_URL}/auth/me`, {
+    method: "GET",
+    credentials: "include", // שולח cookies
+  });
+  return res.json();
+});
+
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
-  reducers: {
-    logout: (state) => {
-      state.token = null;
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder.addCase(loginUser.pending, (state) => {
       state.loading = true;
@@ -54,18 +76,25 @@ const authSlice = createSlice({
     builder.addCase(loginUser.fulfilled, (state, action) => {
       state.loading = false;
       state.token = action.payload.token || null;
-      console.log(state.token)
       state.error = action.payload.error || null;
-                  console.log(state.error)
-
     });
     builder.addCase(registerUser.fulfilled, (state, action) => {
       state.error = action.payload.error || null;
-            console.log(state.error)
-
     });
+    builder.addCase(logoutUser.fulfilled, (state) => {
+      state.token = null;
+      state.error = null;
+    });
+    builder.addCase(checkAuth.fulfilled, (state, action) => {
+  if (action.payload.user) {
+    state.token = "valid"; // אפשר גם לשמור את כל פרטי המשתמש
+    state.error = null;
+  } else {
+    state.token = null;
+  }
+});
+
   },
 });
 
-export const { logout } = authSlice.actions;
 export default authSlice.reducer;

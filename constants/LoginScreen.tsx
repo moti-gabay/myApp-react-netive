@@ -1,43 +1,41 @@
-import { API_URL } from "@/src/store/url";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import React, { useState } from "react";
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { API_URL } from "./url";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "@/app/(tabs)/_layout";
 
-export default function RegisterScreen({ navigation }: any) {
-    const [name, setName] = useState("");
+type AuthGateNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  "Login"
+>;
+export default function LoginScreen() {
+  const navigation = useNavigation<AuthGateNavigationProp>();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
-    const [success, setSuccess] = useState("");
 
-    const handleRegister = async () => {
+    const handleLogin = async () => {
         try {
-            const res = await axios.post(API_URL + "/auth/register", {
-                name,
+            const res = await axios.post(API_URL + "/auth/login", {
                 email,
                 password,
             });
-
-            setSuccess("✅ נרשמת בהצלחה! אפשר להתחבר עכשיו");
-            setError("");
             console.log(res)
-            setTimeout(() => navigation.navigate("Login"), 1500);
+            await AsyncStorage.setItem("token", res.data.token);
+            setError("");
+            navigation.replace("Home"); // מעבר למסך הבית
         } catch (err) {
-            setError("❌ שגיאה בהרשמה, נסה שוב" + err);
-            setSuccess("");
+            setError("❌ פרטי ההתחברות שגויים" + err);
         }
     };
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>הרשמה</Text>
+            <Text style={styles.title}>התחברות</Text>
 
-            <TextInput
-                placeholder="שם מלא"
-                value={name}
-                onChangeText={setName}
-                style={styles.input}
-            />
             <TextInput
                 placeholder="אימייל"
                 value={email}
@@ -53,17 +51,16 @@ export default function RegisterScreen({ navigation }: any) {
             />
 
             {error ? <Text style={styles.error}>{error}</Text> : null}
-            {success ? <Text style={styles.success}>{success}</Text> : null}
 
-            <TouchableOpacity style={styles.button} onPress={handleRegister}>
-                <Text style={styles.buttonText}>הירשם</Text>
+            <TouchableOpacity style={styles.button} onPress={handleLogin}>
+                <Text style={styles.buttonText}>התחבר</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
                 style={styles.linkButton}
-                // onPress={() => navigation.navigate("Login")}
+                onPress={() => navigation.navigate("Login")}
             >
-                <Text style={styles.linkText}>יש לך כבר חשבון? התחבר</Text>
+                <Text style={styles.linkText}>אין לך חשבון? הירשם</Text>
             </TouchableOpacity>
         </View>
     );
@@ -71,7 +68,7 @@ export default function RegisterScreen({ navigation }: any) {
 
 const styles = StyleSheet.create({
     container: {
-        // marginTop:100,
+        marginTop: 100,
         flex: 1,
         justifyContent: "center",
         padding: 25,
@@ -94,7 +91,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     button: {
-        backgroundColor: "#4CAF50",
+        backgroundColor: "#2196F3",
         paddingVertical: 14,
         borderRadius: 10,
         marginTop: 10,
@@ -115,11 +112,6 @@ const styles = StyleSheet.create({
     },
     error: {
         color: "red",
-        textAlign: "center",
-        marginBottom: 10,
-    },
-    success: {
-        color: "green",
         textAlign: "center",
         marginBottom: 10,
     },

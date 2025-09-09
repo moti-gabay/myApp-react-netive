@@ -23,7 +23,7 @@ const initialState: TaskState = {
 // ---- קריאה לשרת ----
 export const fetchTasks = createAsyncThunk("tasks/fetch", async () => {
   const res = await fetch(API_URL + "/tasks");
-  console.log("res : " + res);
+  console.log("res : " + res.toString());
   return res.json();
 });
 
@@ -41,6 +41,46 @@ export const addTaskAsync = createAsyncThunk(
     return res.json(); // השרת מחזיר את המשימה החדשה עם __id
   }
 );
+// עדכון משימה
+export const updateTaskAsync = createAsyncThunk(
+  "tasks/update",
+  async ({ id, title, completed }: { id: string; title: string; completed: boolean }) => {
+    const res = await fetch(`${API_URL}/tasks/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title, completed }),
+      credentials: "include"
+
+    });
+    return res.json();
+  }
+);
+export const toggleTaskCompleted = createAsyncThunk(
+  "tasks/toggleCompleted",
+  async ({ id, completed }: { id: string; completed: boolean }) => {
+    const res = await fetch(`${API_URL}/tasks/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ completed }),
+      credentials: "include"
+    });
+    return res.json();
+  }
+);
+
+export const deleteTaskAsync = createAsyncThunk(
+  "tasks/delete",
+  async (id: string) => {
+    const res = await fetch(API_URL + "/tasks/" + id, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      // body: JSON.stringify({ title }),
+      credentials: "include"
+
+    });
+    return res.json();
+  }
+);
 
 const taskSlice = createSlice({
   name: 'tasks',
@@ -51,15 +91,6 @@ const taskSlice = createSlice({
       if (index !== -1) {
         state.tasks[index] = action.payload;
       }
-    },
-    toggleTask: (state, action: PayloadAction<string>) => {
-      const task = state.tasks.find(t => t._id === action.payload);
-      if (task) {
-        task.completed = !task.completed;
-      }
-    },
-    deleteTask: (state, action: PayloadAction<string>) => {
-      state.tasks = state.tasks.filter(t => t._id !== action.payload);
     }
   },
   extraReducers: builder => {
@@ -76,8 +107,28 @@ const taskSlice = createSlice({
     builder.addCase(addTaskAsync.fulfilled, (state, action) => {
       state.tasks.push(action.payload);
     });
+
+    builder.addCase(updateTaskAsync.fulfilled, (state, action) => {
+      const index = state.tasks.findIndex(t => t._id === action.payload._id);
+      if (index !== -1) {
+        state.tasks[index] = {
+          _id: action.payload._id,
+          title: action.payload.title,
+          completed: action.payload.completed,
+        };
+      }
+    });
+    builder.addCase(toggleTaskCompleted.fulfilled, (state, action: PayloadAction<Task>) => {
+      const index = state.tasks.findIndex(t => t._id === action.payload._id);
+      if (index !== -1) {
+        state.tasks[index] = action.payload;
+      }
+    });
+    builder.addCase(deleteTaskAsync.fulfilled,(state,action) => {
+      state.tasks = state.tasks.filter(t => t._id !== action.payload); 
+   })
   },
 });
 
-export const { updateTask, toggleTask, deleteTask } = taskSlice.actions;
+export const { updateTask } = taskSlice.actions;
 export default taskSlice.reducer;
